@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JTable;
+import javax.swing.JList;
 
 public class GUI_Window {
 
@@ -152,6 +154,11 @@ public class GUI_Window {
 		MainGameMenu.setLayout(null);
 		
 		JButton btnMove = new JButton("Move");
+		btnMove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchMenu("movemenu");
+			}
+		});
 		btnMove.setFont(new Font("Javanese Text", Font.PLAIN, 21));
 		btnMove.setBounds(22, 402, 147, 90);
 		MainGameMenu.add(btnMove);
@@ -162,6 +169,11 @@ public class GUI_Window {
 		MainGameMenu.add(btnExamineArea);
 		
 		JButton btnViewStatus = new JButton("View Status");
+		btnViewStatus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchMenu("statusmenu");
+			}
+		});
 		btnViewStatus.setFont(new Font("Javanese Text", Font.PLAIN, 21));
 		btnViewStatus.setBounds(558, 402, 155, 90);
 		MainGameMenu.add(btnViewStatus);
@@ -192,5 +204,85 @@ public class GUI_Window {
 		MainGameTextArea.setText("This is just Sample Text, the Actual game output will be displayed here once i finish all of the logic. \r\n\r\nAll of the buttons here will also either display their own menus or will display info on the screen. \r\n\r\nThis is probably not the final version of this main menu, and i still need to add player statuses at top. \r\n\r\nJust showing that i do have a GUI created, and I'm working on it while i continue to write logic. ");
 		MainGameTextArea.setFont(new Font("Monospaced", Font.PLAIN, 17));
 		scrollPane.setViewportView(MainGameTextArea);
+		
+		JPanel MoveMenu = new JPanel();
+		MoveMenu.setBackground(new Color(192, 192, 192));
+		frame.getContentPane().add(MoveMenu, "movemenu");
+		MoveMenu.setLayout(null);
+		
+		JButton MoveButtonN = new JButton("Move North");
+		MoveButtonN.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
+		MoveButtonN.setForeground(new Color(0, 0, 0));
+		MoveButtonN.setBackground(new Color(128, 128, 128));
+		MoveButtonN.setBounds(134, 45, 108, 65);
+		MoveMenu.add(MoveButtonN);
+		
+		JButton MoveButtonE = new JButton("Move East");
+		MoveButtonE.setForeground(Color.BLACK);
+		MoveButtonE.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
+		MoveButtonE.setBackground(Color.GRAY);
+		MoveButtonE.setBounds(244, 86, 108, 65);
+		MoveMenu.add(MoveButtonE);
+		
+		JButton MoveButtonW = new JButton("Move West");
+		MoveButtonW.setForeground(Color.BLACK);
+		MoveButtonW.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
+		MoveButtonW.setBackground(Color.GRAY);
+		MoveButtonW.setBounds(24, 86, 108, 65);
+		MoveMenu.add(MoveButtonW);
+		
+		JButton MoveButtonS = new JButton("Move South");
+		MoveButtonS.setForeground(Color.BLACK);
+		MoveButtonS.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
+		MoveButtonS.setBackground(Color.GRAY);
+		MoveButtonS.setBounds(134, 137, 108, 65);
+		MoveMenu.add(MoveButtonS);
+		
+		JButton ExitMoveMenu = new JButton("Back to Menu");
+		ExitMoveMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchMenu("gamemenu");
+			}
+		});
+		ExitMoveMenu.setForeground(Color.BLACK);
+		ExitMoveMenu.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
+		ExitMoveMenu.setBackground(Color.GRAY);
+		ExitMoveMenu.setBounds(10, 399, 174, 93);
+		MoveMenu.add(ExitMoveMenu);
+		
+		JPanel StatusMenu = new JPanel();
+		StatusMenu.setBackground(new Color(192, 192, 192));
+		frame.getContentPane().add(StatusMenu, "statusmenu");
+		StatusMenu.setLayout(null);
+		
+		JButton ReturnToMenu = new JButton("Back to Menu");
+		ReturnToMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchMenu("gamemenu");
+			}
+		});
+		ReturnToMenu.setBounds(415, 439, 116, 53);
+		StatusMenu.add(ReturnToMenu);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(641, 11, 293, 351);
+		StatusMenu.add(scrollPane_1);
+		
+		JList QuestList = new JList();
+		scrollPane_1.setViewportView(QuestList);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(11, 11, 315, 351);
+		StatusMenu.add(scrollPane_2);
+		
+		JList ItemsList = new JList();
+		scrollPane_2.setViewportView(ItemsList);
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(337, 11, 293, 351);
+		StatusMenu.add(scrollPane_3);
+		
+		JList EquipmentList = new JList();
+		scrollPane_3.setViewportView(EquipmentList);
 	}
 }
