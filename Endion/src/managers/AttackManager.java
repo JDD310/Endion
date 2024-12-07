@@ -28,7 +28,7 @@ public class AttackManager {
     }
     
     // Helper Method to Create the Player's Starting Attack Set.
-    public static void addBasicAttacksToPlayer(Player player, Map<String, Attack> allAttacks, String[] playerStartingAttackSet) {
+    public static void addBasicAttacksToPlayer(Player player, Map<String, Attack> allAttacks, List<String> playerStartingAttackSet) {
     	
         // Create a list to hold the attacks
         List<Attack> basicAttacks = new ArrayList<>();

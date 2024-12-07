@@ -23,22 +23,13 @@ public class EnvironmentManager {
 
     // Initialize the environment manager
     public void initializeEnvironment() {
-        updateCurrentEnvironment();
+        displayCurrentEnvironment();
         System.out.println("Initialized environment: " + currentEnvironment);
     }
     
     // Get the list of adjacent tiles to the current tile
     public List<Tile> getAdjacentTiles(Tile currentTile) {
         return worldManager.getAdjacentTiles(currentTile);  // Get adjacent tiles from WorldManager
-    }
-
-    // Update the current environment based on player position
-    public void updateCurrentEnvironment() {
-        Tile currentTile = getPlayerTile();
-        if (currentTile != null) {
-            currentEnvironment = currentTile.getName(); // Assuming Tile has a name representing the environment
-        }
-        //TODO What did i even write this for, i have no idea how i'm going to use it
     }
     
     // Display information about the current environment

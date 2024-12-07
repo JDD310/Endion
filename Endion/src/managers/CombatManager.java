@@ -21,8 +21,8 @@ public class CombatManager {
         this.enemyManager = enemyManager;
         this.guiManager = guiManager;
     }
-    
-    // Select an Enemy from the Current Tile
+
+	// Select an Enemy from the Current Tile
     public Enemy selectEnemy() {
     	return enemyManager.getRandomEnemyFromTile(player.getX(), player.getY());
     }
@@ -65,9 +65,23 @@ public class CombatManager {
         Attack chosenAttack = playerAttacks.get(random.nextInt(playerAttacks.size()));
 
         // Calculate and apply damage
-        int damage = chosenAttack.getDamage();
-        enemy.takeDamage(damage);
-        appendToOutput("Player used " + chosenAttack.getName() + " and dealt " + damage + " damage to " + enemy.getName() + ".");
+        List<Integer> damageRange = chosenAttack.getDamageRange();
+        
+        int minDamage = damageRange.get(0);
+        int maxDamage = damageRange.get(1);
+
+        Random rand = new Random();
+        int damage =  rand.nextInt((maxDamage - minDamage) + 1) + minDamage;
+        
+        switch(chosenAttack.getType()) {
+        case "heal":
+        	enemy.healEnemy(damage);
+        	break;
+        case "hurt":
+        	enemy.hurtEnemy(damage);
+        	break;
+        }
+        appendToOutput(player.getName() + " used " + chosenAttack.getName() + " and dealt " + damage + " damage to " + enemy.getName() + ".");
     }
 
     // Perform a random attack from the enemy
@@ -83,13 +97,27 @@ public class CombatManager {
         Attack chosenAttack = enemyAttacks.get(random.nextInt(enemyAttacks.size()));
 
         // Calculate and apply damage
-        int damage = chosenAttack.getDamage();
-        player.updateHealth(player.getHealth() - damage);
-        appendToOutput(enemy.getName() + " used " + chosenAttack.getName() + " and dealt " + damage + " damage to the player.");
+        List<Integer> damageRange = chosenAttack.getDamageRange();
+        
+        int minDamage = damageRange.get(0);
+        int maxDamage = damageRange.get(1);
+
+        Random rand = new Random();
+        int damage =  rand.nextInt((maxDamage - minDamage) + 1) + minDamage;
+        
+        switch(chosenAttack.getType()) {
+        case "heal":
+        	player.healPlayer(damage);
+        	break;
+        case "hurt":
+        	player.hurtPlayer(damage);
+        	break;
+        }
+        appendToOutput(enemy.getName() + " used " + chosenAttack.getName() + " and dealt " + damage + " damage to" + player.getName() + ".");
     }
 
     // Append output to the GUI text area
     private void appendToOutput(String message) {
-        guiManager.appendToTextArea(message + "\n");
+        guiManager.updateMainMenuText(message + "\n");
     }
 }

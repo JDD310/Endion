@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Player {
     private final String name;
-    private int health;
+    private float health;
     private List<String> inventory;
     private List<Attack> attacks;
     private List<Quest> activeQuests;
@@ -27,7 +27,7 @@ public class Player {
         return name;
     }
 
-    public int getHealth() {
+    public float getHealth() {
         return health;
     }
 
@@ -56,12 +56,24 @@ public class Player {
     }
     
 
-    // Update health
-    public void setHealth(int ammount) {
-        this.health -= ammount;
+    // set Health to a given Value
+    public void setHealth(float ammount) {
+        this.health = ammount;
         if (this.health < 0) {
             this.health = 0; // Prevent health from going below 0
         }
+    }
+    
+    // Heal the player by a specified amount
+    public void healPlayer(int amount) {
+        float newHealth = (getHealth() + amount);
+        setHealth(newHealth);
+    }
+
+    // Damage the player by a specified amount
+    public void hurtPlayer(int amount) {
+        float newHealth = (getHealth() - amount);
+        setHealth(newHealth);
     }
     
     // Check if the player is alive
