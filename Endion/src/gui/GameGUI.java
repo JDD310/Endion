@@ -2,11 +2,11 @@ package gui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,15 +17,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
-import core.GameEngine;
+import core.Engine;
 import entities.Player;
 import managers.GUIManager;
 import managers.WorldManager;
 
 public class GameGUI {
 	private JFrame frame;
-    private JPanel gridPanel;
+//    private JPanel gridPanel;
     private JTextArea mainGameTextArea;
 
     private final Player player;
@@ -48,10 +49,21 @@ public class GameGUI {
 		return mainGameTextArea;
 	}
     
-    // Updates the Text on the Main Game Text Area
-	public void updateMainGameTextArea(String Message) {
-		mainGameTextArea.setText(Message);;
-	}
+    public void updateMainGameTextArea(String message) {
+        // Update the text area immediately
+        mainGameTextArea.setText(message);
+
+        // Create a Timer with explicit ActionListener
+        Timer timer = new Timer(1200, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((Timer) e.getSource()).stop(); // Stops the timer
+            }
+        });
+
+        timer.setRepeats(false); // Ensures the Timer runs only once
+        timer.start();
+    }
 	
 	// Method to clear the Main Game Text Area
     public void clearTextArea() {
@@ -225,17 +237,18 @@ public class GameGUI {
 			}
 		});
 		
-		// Creating the Grid Panel that Displays the Player's current location on map.
-        gridPanel = new JPanel(new GridLayout(9, 5));
-        gridPanel.setBounds(441, 155, 439, 310);
-        guiManager.populateGridPanel(player, worldManager);
-        
+//		// Creating the Grid Panel that Displays the Player's current location on map.
+//        gridPanel = new JPanel(new GridLayout(9, 5));
+//        gridPanel.setBounds(441, 155, 439, 310);
+//        guiManager.populateGridPanel(player, worldManager);
+//        
         // Adding all elements to the menu
         moveMenu.add(moveNorth);
         moveMenu.add(moveSouth);
         moveMenu.add(moveEast);
         moveMenu.add(moveWest);
-        moveMenu.add(gridPanel);
+        moveMenu.add(exitMoveMenu);
+//        moveMenu.add(gridPanel);
 
         frame.getContentPane().add(moveMenu, "moveMenu");
     }
@@ -248,7 +261,7 @@ public class GameGUI {
         button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				worldManager.move(direction);
-	            guiManager.populateGridPanel(player, worldManager);
+//	            guiManager.populateGridPanel(player, worldManager);
 			}
 		});
         return button;

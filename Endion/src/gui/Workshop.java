@@ -11,30 +11,44 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-import core.*;
+import core.Engine;
 
-public class StartGUI {
+public class Workshop {
 
 	private JFrame frame;
-	
-	private void setDifficulty(Difficulty difficulty) {
-		Config.setDifficulty(difficulty);
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Workshop window = new Workshop();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	// Method to switch menus
 	private void switchMenu(String menuName) {
-		CardLayout layout = (CardLayout) frame.getContentPane().getLayout();
-		layout.show(frame.getContentPane(), menuName);
+			CardLayout layout = (CardLayout) frame.getContentPane().getLayout();
+			layout.show(frame.getContentPane(), menuName);
 	}
 
-	public StartGUI() {
+	/**
+	 * Create the application.
+	 */
+	public Workshop() {
 		initialize();
 	}
 
-	
 	private void initialize() {
         frame = new JFrame("Endion RPG");
         frame.setBounds(100, 100, 960, 540);
@@ -75,7 +89,7 @@ public class StartGUI {
         frame.getContentPane().add(startMenu, "startMenu");
     }
     
- // Add Difficulty Menu
+ // Add Spawn Menu
     private void addDifficultyMenu() {
         JPanel difficultyMenu = new JPanel(null);
         difficultyMenu.setBackground(Color.LIGHT_GRAY);
@@ -95,25 +109,25 @@ public class StartGUI {
         // Adding the actions
         difficulty1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDifficulty(Difficulty.EASY);
+				
 				switchMenu("playerMenu");
 			}
 		});
         difficulty2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDifficulty(Difficulty.NORMAL);
+				
 				switchMenu("playerMenu");
 			}
 		});
         difficulty3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDifficulty(Difficulty.HARD);
+				
 				switchMenu("playerMenu");
 			}
 		});
         difficulty4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDifficulty(Difficulty.IMPOSSIBLE);
+				
 				switchMenu("playerMenu");
 			}
 		});
@@ -127,7 +141,7 @@ public class StartGUI {
         frame.getContentPane().add(difficultyMenu, "difficultyMenu");
     }
     
-    // Factory to Create Buttons for DifficultyMenu
+    // Factory to Create Buttons for SpawnMenu
     private JButton createDifficultyButton(String difficulty, int y) {
         JButton button = new JButton(difficulty);
         button.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -167,9 +181,8 @@ public class StartGUI {
                 if (!selectedName.isEmpty()) {
                 	// Kill the current GUI
                 	frame.dispose();
-                	// Initialize GameEngine with the player's name and difficulty
-                	String diff = Config.getDiff().toString();
-                	new Engine(selectedName, "GameData.json", diff);
+                	// Initialize GameEngine with the player's name
+                    new Engine(selectedName, "GameData.json", "DEVMODE1");
                 } else {
                     resultLabel.setText("Please enter a valid name.");
                 }

@@ -7,11 +7,11 @@ import java.util.Random;
 public class Enemy {
     private final String name;
     private final String description;
-    private int health;
+    private float health;
     private final List<Attack> attacks;
 
     // Constructor
-    public Enemy(String name, String description, int health, List<Attack> attacks) {
+    public Enemy(String name, String description, float health, List<Attack> attacks) {
         this.name = name;
         this.description = description;
         this.health = health;
@@ -27,7 +27,7 @@ public class Enemy {
         return description;
     }
 
-    public int getHealth() {
+    public float getHealth() {
         return health;
     }
 
@@ -36,8 +36,20 @@ public class Enemy {
     }
     
     // Set Health
-    public void setHealth(int ammount) {
+    public void setHealth(float ammount) {
     	this.health = ammount;
+    }
+    
+    // Heal the Enemy by a specified amount
+    public void healEnemy(int amount) {
+        float newHealth = (getHealth() + amount);
+        setHealth(newHealth);
+    }
+
+    // Damage the Enemy by a specified amount
+    public void hurtEnemy(int amount) {
+        float newHealth = (getHealth() - amount);
+        setHealth(newHealth);
     }
     
     // Attack method (returns a random attack)

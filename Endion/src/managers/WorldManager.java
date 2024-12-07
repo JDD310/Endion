@@ -18,14 +18,14 @@ public class WorldManager {
     private Player player;
     private final int worldWidth = 9;  
     private final int worldHeight = 5;
-    private Map<String, Tile> tiles;
+    private Map<String, Tile> tilesMap;
 
     // Constructor
     public WorldManager(Player player, Map<String, Tile> tiles) {
         this.player = player;
         this.worldMap = new Tile[worldHeight][worldWidth];
-        this.tiles = tiles;
-        populateWorldMap(tiles);
+        this.tilesMap = tiles;
+        populateWorldMap(tilesMap);
     }
     
     // Populate WorldMap
@@ -57,6 +57,8 @@ public class WorldManager {
 
     // Get adjacent tiles (up, down, left, right)
     public List<Tile> getAdjacentTiles(Tile tile) {
+    	
+    	// Creating an Empty ArrayList that can be Filled with Tile Objects
         List<Tile> adjacentTiles = new ArrayList<>();
 
         // Get the tile's current position

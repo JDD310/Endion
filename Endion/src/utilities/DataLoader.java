@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import core.Config;
 import entities.Attack;
 import entities.Enemy;
 import entities.NPC;
@@ -27,9 +28,41 @@ public class DataLoader {
         }
         return null;
     }
+    
+    public static Config loadConfig(JSONObject data, String difficulty) {
+    	
+        // Access the "config" section
+        if (!data.has("config")) {
+            throw new IllegalArgumentException("Config section not found in the JSON data");
+        }
+        
+        JSONObject configSection = data.getJSONObject("config");
 
+        // Get the difficulty-specific data
+        if (!configSection.has(difficulty)) {
+            throw new IllegalArgumentException("Difficulty not found: " + difficulty);
+        }
+        
+        JSONObject difficultyData = configSection.getJSONObject(difficulty);
+
+        // Parse player configuration
+        JSONObject playerData = difficultyData.getJSONObject("player");
+        int playerHealth = playerData.getInt("health");
+        List<String> playerAttacks = new ArrayList<>();
+        playerData.getJSONArray("attacks").forEach(item -> playerAttacks.add(item.toString()));
+
+        // Parse enemy configuration
+        JSONObject enemyData = difficultyData.getJSONObject("enemies");
+        float healthMultiplier = (float) enemyData.getDouble("healthMulti");
+        float damageMultiplier = (float) enemyData.getDouble("damageMulti");
+
+        // Return the parsed data as a ConfigData object
+        return new Config(playerHealth, playerAttacks, healthMultiplier, damageMultiplier);
+    }
+
+    
     // Parse enemy data from the JSON
-    public static Map<String, Enemy> parseEnemyData(JSONObject data, Map<String, Attack> attackData) {
+    public static Map<String, Enemy> parseEnemyData(JSONObject data, Map<String, Attack> attackData, float healthMod) {
         Map<String, Enemy> enemies = new HashMap<>();
 
         if (data.has("enemies")) {
@@ -55,9 +88,9 @@ public class DataLoader {
                         }
                     }
                 }
-
+                float healthFinal = health * healthMod;
                 // Create Enemy object
-                Enemy enemy = new Enemy(enemyName, description, health, enemyAttacks);
+                Enemy enemy = new Enemy(enemyName, description, healthFinal, enemyAttacks);
                 enemies.put(enemyName, enemy);
             }
         }
@@ -155,17 +188,18 @@ public class DataLoader {
         if (data.has("attacks")) {
             JSONObject attacksData = data.getJSONObject("attacks");
             for (String attackName : attacksData.keySet()) {
-                JSONObject npcInfo = attacksData.getJSONObject(attackName);
+                JSONObject attackInfo = attacksData.getJSONObject(attackName);
 
                 // Extract Attack attributes
-                String description = npcInfo.optString("description", "No description available.");
-                JSONArray damageRangeArray = npcInfo.optJSONArray("damageRange");
+                String description = attackInfo.optString("description", "No description available.");
+                JSONArray damageRangeArray = attackInfo.optJSONArray("damageRange");
                 List<Integer> damageRange = damageRangeArray != null ? damageRangeArray.toList().stream()
                         .map(obj -> Integer.parseInt(obj.toString()))
                         .collect(Collectors.toList()) : new ArrayList<>();
+                String type = attackInfo.optString("type", "hurt");
                 
                 // Create Attack object
-                Attack attack = new Attack(attackName, description, damageRange);
+                Attack attack = new Attack(attackName, description, damageRange, type);
                 attacks.put(attackName, attack);
             }
         }

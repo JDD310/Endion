@@ -6,11 +6,13 @@ public class Attack {
     private final String name;
     private final String description;
     private final List<Integer> damageRange;
+    private final String type;
 
-    public Attack(String name, String description, List<Integer> damageRange) {
+    public Attack(String name, String description, List<Integer> damageRange, String type) {
         this.name = name;
         this.description = description;
         this.damageRange = damageRange;
+        this.type = type;
     }
 
     public String getName() {
@@ -23,5 +25,9 @@ public class Attack {
 
     public List<Integer> getDamageRange() {
         return damageRange;
+    }
+    
+    public String getType() {
+    	return type;
     }
 }

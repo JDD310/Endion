@@ -65,8 +65,6 @@ public class EnemyManager {
         }
     }
     
-    
-    
     // Get all unique enemies
     public Map<String, Enemy> getAllEnemies() {
         return allEnemies;
