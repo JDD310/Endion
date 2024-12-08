@@ -4,8 +4,8 @@ package entities;
 import java.util.List;
 import java.util.Random;
 
-public class NPC {
-	private final String name;
+public class NPC extends Entity {
+	
     private final String description;
     private final List<String> dialogues;
     private final String quest;
@@ -13,7 +13,7 @@ public class NPC {
 
     // Constructor for NPC with a quest
     public NPC(String name, String description, List<String> dialogues, String quest, int[] gridLocation) {
-        this.name = name;
+        super(name);
         this.description = description;
         this.dialogues = dialogues;
         this.quest = quest;

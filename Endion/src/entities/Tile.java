@@ -3,8 +3,8 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tile {
-    private final String name;
+public class Tile extends Entity {
+
     private final String description;
     private final String searchableInfo;
     private List<String> lootPool;
@@ -14,7 +14,7 @@ public class Tile {
 
     // Constructor
     public Tile(String name, String description, String searchableInfo, List<String> lootPool, List<Enemy> enemies, boolean hasNPC, int[] gridLocation) {
-        this.name = name;
+        super(name);
         this.description = description;
         this.searchableInfo = searchableInfo;
         this.lootPool = lootPool;
@@ -22,7 +22,6 @@ public class Tile {
         this.hasNPC = hasNPC;
         this.gridLocation = gridLocation;
     }
-//String name, String description, boolean hasNPC, int[] gridLocation) {
     
     // Getters
     public String getName() {

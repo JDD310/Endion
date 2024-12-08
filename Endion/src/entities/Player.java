@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Player {
-    private final String name;
+public class Player extends Entity {
+
     private float health;
-    private List<String> inventory;
+    private List<Item> inventory;
     private List<Attack> attacks;
     private List<Quest> activeQuests;
     private int[] playerPosition;
 
     // Constructor
     public Player(String name, int health) {
-        this.name = name;
+        super(name);
         this.health = health;
         this.inventory = new ArrayList<>();
         this.attacks = new ArrayList<>();
@@ -31,7 +31,7 @@ public class Player {
         return health;
     }
 
-    public List<String> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
@@ -102,7 +102,7 @@ public class Player {
     }
 
     // Add an item to the inventory
-    public void addItem(String item) {
+    public void addItem(Item item) {
         inventory.add(item);
     }
 

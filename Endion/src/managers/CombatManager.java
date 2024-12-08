@@ -3,7 +3,7 @@ package managers;
 import entities.Attack;
 import entities.Enemy;
 import entities.Player;
-
+import gui.GUIHelper;
 import java.util.List;
 import java.util.Random;
 
@@ -12,14 +12,14 @@ public class CombatManager {
     private final Player player;
     private final AttackManager attackManager;
     private final EnemyManager enemyManager;
-    private final GUIManager guiManager;
+    private final GUIHelper guiHelper;
 
     // Constructor
-    public CombatManager(Player player, AttackManager attackManager, EnemyManager enemyManager, GUIManager guiManager) {
+    public CombatManager(Player player, AttackManager attackManager, EnemyManager enemyManager, GUIHelper guiHelper) {
         this.player = player;
         this.attackManager = attackManager;
         this.enemyManager = enemyManager;
-        this.guiManager = guiManager;
+        this.guiHelper = guiHelper;
     }
 
 	// Select an Enemy from the Current Tile
@@ -39,6 +39,7 @@ public class CombatManager {
 
             if (enemy.getHealth() <= 0) {
                 appendToOutput(enemy.getName() + " has been defeated!");
+                enemyManager.removeEnemyFromTile(player.getX(), player.getY(), enemy);
                 break;
             }
 
@@ -47,6 +48,9 @@ public class CombatManager {
 
             if (player.getHealth() <= 0) {
                 appendToOutput("You have been defeated...");
+                appendToOutput("You are Dead.");
+                appendToOutput("Game Over.");
+                guiHelper.endGame();
                 break;
             }
         }
@@ -118,6 +122,6 @@ public class CombatManager {
 
     // Append output to the GUI text area
     private void appendToOutput(String message) {
-        guiManager.updateMainMenuText(message + "\n");
+        guiHelper.updateMainMenuText(message + "\n");
     }
 }

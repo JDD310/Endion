@@ -6,8 +6,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
-
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,23 +22,25 @@ import javax.swing.Timer;
 
 import core.Engine;
 import entities.Player;
-import managers.GUIManager;
 import managers.WorldManager;
+import utilities.GameUtils;
 
 public class GameGUI {
+	
 	private JFrame frame;
 //    private JPanel gridPanel;
     private JTextArea mainGameTextArea;
+    
+    private JList<String> questList;
+    private JList<String> attackList;
+    private JList<String> itemList;
+    
+    
+    
+    private ActionController controller;
 
-    private final Player player;
-    private final WorldManager worldManager;
-    private final GUIManager guiManager;
-
-    public GameGUI(Player player, WorldManager worldManager, GUIManager guiManager) {
-        this.player = player;
-        this.worldManager = worldManager;
-        this.guiManager = guiManager;
-
+    public GameGUI(ActionController actionController) {
+    	this.controller = actionController;
         initialize();
     }
     
@@ -48,6 +51,24 @@ public class GameGUI {
     public JTextArea getGameOutputTextArea() {
 		return mainGameTextArea;
 	}
+    
+    /**
+    * Updates the three JLists with the latest player information when called.
+    * 
+    * @param attacks The list of player's attacks as strings
+    * @param quests The list of player quests as strings
+    * @param items The list of player items as strings
+    */
+    public void updateStatusMenu(List<String> attacks, List<String> quests, List<String> items) {
+    	// Update the quests list
+        GameUtils.fillJList(questList, quests);
+
+        // Update the items list (convert the player's item list to strings)
+        GameUtils.fillJList(itemList, items);
+
+        // Update the equipment list (for example, weapons, armor, etc.)
+        GameUtils.fillJList(attackList, attacks);
+    }
     
     public void updateMainGameTextArea(String message) {
         // Update the text area immediately
@@ -71,9 +92,33 @@ public class GameGUI {
     }
 	
 	// Method to switch menus
-	private void switchMenu(String menuName) {
+	private void switchMenu(String menu) {
 		CardLayout layout = (CardLayout) frame.getContentPane().getLayout();
-		layout.show(frame.getContentPane(), menuName);
+		layout.show(frame.getContentPane(), menu);
+	}
+	
+	// Method to Create a SwitchMenu ActionListener
+	private void switchMenuButton(JButton button, String menu) {
+        button.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		switchMenu(menu);
+        	}
+        });
+    }
+	
+	// Method to Create a SwitchMenu ActionListener that also does an Action
+	private void switchMenuActionButton(JButton button, String menu, String action) {
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+	        	controller.doAction(action);
+	        	switchMenu(menu);
+	        }
+	    });
+	}
+	
+	// Close the Frame
+	public void closeMenu() {
+		frame.dispose();
 	}
 	
 	
@@ -105,43 +150,24 @@ public class GameGUI {
         spawnMenu.add(prompt);
         
         // Creating the Spawn Location Buttons
-        JButton spawnLoc1 = createSpawnButton("Outskirts of Arvadale", 262);
-        JButton spawnLoc2 = createSpawnButton("Red Dragon Mountains", 327);
-        JButton spawnLoc3 = createSpawnButton("Magical Forest", 392);
-        
-        // Adding the actions
-        spawnLoc1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				switchMenu("gameMenu");
-			}
-		});
-        spawnLoc2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				switchMenu("gameMenu");
-			}
-		});
-        spawnLoc3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				switchMenu("gameMenu");
-			}
-		});
+        JButton spawnCity = createSpawnButton("Outskirts of Arvadale", 262, "setSpawnCity");
+        JButton spawnMountain = createSpawnButton("Red Dragon Mountains", 327, "setSpawnMountain");
+        JButton spawnForest = createSpawnButton("Magical Forest", 392, "setSpawnForest");
         
         // Adding the Spawn Location Buttons to the SpawnMenu
-        spawnMenu.add(spawnLoc1);
-        spawnMenu.add(spawnLoc2);
-        spawnMenu.add(spawnLoc3);
+        spawnMenu.add(spawnCity);
+        spawnMenu.add(spawnMountain);
+        spawnMenu.add(spawnForest);
 
         frame.getContentPane().add(spawnMenu, "spawnMenu");
     }
     
     // Factory to Create Buttons for SpawnMenu
-    private JButton createSpawnButton(String location, int y) {
+    private JButton createSpawnButton(String location, int y, String spawnLocation) {
         JButton button = new JButton(location);
         button.setFont(new Font("Tahoma", Font.PLAIN, 20));
         button.setBounds(331, y, 276, 54);
+        switchMenuActionButton(button, "gameMenu", spawnLocation);
         return button;
     }
 
@@ -151,28 +177,11 @@ public class GameGUI {
         gameMenu.setBackground(Color.LIGHT_GRAY);
         
         // Creating All Five Main Buttons Using the Factory
-        JButton moveButton = createMenuButton("Move", 22, 147, "moveMenu");
-        JButton examineButton = createMenuButton("Examine Area", 191, 176, null);
-        JButton searchButton = createMenuButton("Search Area", 389, 147, null);
-        JButton statusButton = createMenuButton("View Status", 558, 155, "statusMenu");
-        JButton endButton = createMenuButton("End Adventure", 735, 186, null);
-        
-        // Adding the Actions for Each Button that wasn't added by Factory
-        examineButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-        searchButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-        endButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
-			}
-		});
+        JButton moveButton = createMenuButton("Move", 22, 147, "moveMenu", "updateMoveMenu");
+        JButton examineButton = createMenuButton("Examine Area", 191, 176, null, "examine");
+        JButton searchButton = createMenuButton("Search Area", 389, 147, null, "search");
+        JButton statusButton = createMenuButton("View Status", 558, 155, "statusMenu", "updateStatusMenu");
+        JButton endButton = createMenuButton("End Adventure", 735, 186, null, "endGame");
         
         // Adding the buttons to the menu
         gameMenu.add(moveButton);
@@ -201,16 +210,14 @@ public class GameGUI {
     }
     
     // Factory to Create Buttons for GameMenu.
-    private JButton createMenuButton(String text, int x, int w, String menu) {
+    private JButton createMenuButton(String text, int x, int w, String menu, String action) {
         JButton button = new JButton(text);
         button.setFont(new Font("Javanese Text", Font.PLAIN, 21));
         button.setBounds(x, 402, w, 90);
-        if(menu != null) {
-        	button.addActionListener(new ActionListener() {
-    			public void actionPerformed(ActionEvent e) {
-    				switchMenu(menu);
-    			}
-    		});
+        if(menu != null && action != null) {
+        	switchMenuActionButton(button, menu, action);
+        } else {
+        	controller.doAction(action);
         }
         return button;
     }
@@ -222,20 +229,16 @@ public class GameGUI {
         
         
         // Directional Move buttons created with the Factory
-        JButton moveNorth = createMoveButton("Move North", "NORTH", 134, 45);
-        JButton moveSouth = createMoveButton("Move South", "SOUTH", 134, 137);
-        JButton moveEast = createMoveButton("Move East", "EAST", 244, 86);
-        JButton moveWest = createMoveButton("Move West", "WEST", 24, 86);
+        JButton moveNorth = createMoveButton("Move North", "NORTH", 134, 45, "moveNorth");
+        JButton moveSouth = createMoveButton("Move South", "SOUTH", 134, 137, "moveSouth");
+        JButton moveEast = createMoveButton("Move East", "EAST", 244, 86, "moveEast");
+        JButton moveWest = createMoveButton("Move West", "WEST", 24, 86, "moveWest");
         
         // Button to Return to Menu
         JButton exitMoveMenu = new JButton("Back to Menu");
         exitMoveMenu.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
 		exitMoveMenu.setBounds(10, 399, 174, 93);
-		exitMoveMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				switchMenu("gameMenu");
-			}
-		});
+		switchMenuButton(exitMoveMenu, "gameMenu");
 		
 //		// Creating the Grid Panel that Displays the Player's current location on map.
 //        gridPanel = new JPanel(new GridLayout(9, 5));
@@ -254,14 +257,13 @@ public class GameGUI {
     }
     
     // Factory to Create the MoveMenu Buttons
-    private JButton createMoveButton(String text, String direction, int x, int y) {
+    private JButton createMoveButton(String text, String direction, int x, int y, String action) {
         JButton button = new JButton(text);
         button.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
         button.setBounds(x, y, 108, 65);
         button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				worldManager.move(direction);
-//	            guiManager.populateGridPanel(player, worldManager);
+				controller.doAction(action);
 			}
 		});
         return button;
@@ -274,39 +276,32 @@ public class GameGUI {
 
         // Add the "Back to Menu" button
         JButton exitStatusMenu = new JButton("Back to Menu");
-        exitStatusMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				switchMenu("gameMenu");
-			}
-		});
+        switchMenuButton(exitStatusMenu, "gameMenu");
 		exitStatusMenu.setBounds(415, 439, 116, 53);
 		statusMenu.add(exitStatusMenu);
-
-        // Add the quest list scroll pane
-        JScrollPane questScrollPane = createScrollPane(641, 11, 293, 351);
-        JList<String> questList = new JList<>();
-        questScrollPane.setViewportView(questList);
+		
+		// Create the Three JLists to hold Status Info
+        questList = new JList<String>();
+        itemList = new JList<String>();
+        attackList = new JList<String>();
+		
+        // Create the Three Scroll Panes to hold the different JLists
+        JScrollPane questScrollPane = createScrollPane(641, 11, 293, 351, questList);
+        JScrollPane itemsScrollPane = createScrollPane(11, 11, 315, 351, itemList);
+        JScrollPane attackScrollPane = createScrollPane(337, 11, 293, 351, attackList);
+        
+        // Add the scroll panes to the status menu
         statusMenu.add(questScrollPane);
-
-        // Add the items list scroll pane
-        JScrollPane itemsScrollPane = createScrollPane(11, 11, 315, 351);
-        JList<String> itemsList = new JList<>();
-        itemsScrollPane.setViewportView(itemsList);
         statusMenu.add(itemsScrollPane);
-
-        // Add the equipment list scroll pane
-        JScrollPane equipmentScrollPane = createScrollPane(337, 11, 293, 351);
-        JList<String> equipmentList = new JList<>();
-        equipmentScrollPane.setViewportView(equipmentList);
-        statusMenu.add(equipmentScrollPane);
+        statusMenu.add(attackScrollPane);
 
         // Add the Status Menu to the frame
         frame.getContentPane().add(statusMenu, "statusMenu");
     }
     
     // Factory to create the Scroll Panes for the StatusMenu
-    private JScrollPane createScrollPane(int x, int y, int width, int height) {
-        JScrollPane scrollPane = new JScrollPane();
+    private JScrollPane createScrollPane(int x, int y, int width, int height, JList<String> list) {
+        JScrollPane scrollPane = new JScrollPane(list);
         scrollPane.setBounds(x, 11, 293, 351);
         return scrollPane;
     }    

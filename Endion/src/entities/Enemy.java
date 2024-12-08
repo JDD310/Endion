@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Enemy {
-    private final String name;
-    private final String description;
+public class Enemy extends Entity {
+	
+	private final String description;
     private float health;
     private final List<Attack> attacks;
 
     // Constructor
     public Enemy(String name, String description, float health, List<Attack> attacks) {
-        this.name = name;
-        this.description = description;
+    	super(name);
+    	this.description = description;
         this.health = health;
         this.attacks = new ArrayList<>();
     }

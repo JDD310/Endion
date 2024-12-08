@@ -13,12 +13,33 @@ public class Config {
     private final List<String> playerStartingAttacks;
     private final float healthMultiplier;
     private final float damageMultiplier;
+    
+    // Assigning Coordinates to Spawn Locations
+   	private final static int[] citySpawn = new int[]{3, 1};
+   	private final static int[] mountainSpawn = new int[]{2, 4};
+   	private final static int[] forestSpawn = new int[]{1, 7};
 		
     public Config(int playerHealth, List<String> playerAttacks, float healthMultiplier, float damageMultiplier) {
         this.playerStartingHealth = playerHealth;
         this.playerStartingAttacks = playerAttacks;
         this.healthMultiplier = healthMultiplier;
         this.damageMultiplier = damageMultiplier;
+    }
+    
+    // Getter for spawn location info, default spawn is city.
+    public static int[] getSpawn(String spawn) {
+    	switch(spawn.toLowerCase()) {
+    	case "city":
+    		return citySpawn;
+    	case "mountain":
+    		return mountainSpawn;
+    	case "forest":
+    		return forestSpawn;
+    	default:
+    		return citySpawn;
+    	}
+    	
+    		
     }
     
     public static Difficulty getDiff() {
