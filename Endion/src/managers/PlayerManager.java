@@ -3,8 +3,10 @@ package managers;
 import java.util.List;
 
 import entities.Attack;
+import entities.Item;
 import entities.Player;
 import entities.Quest;
+import utilities.GameUtils;
 
 public class PlayerManager {
 
@@ -26,16 +28,21 @@ public class PlayerManager {
     }
 
     // Add an item to the player's inventory
-    public void addItemToInventory(String item) {
+    public void addItemToInventory(Item item) {
         player.addItem(item);
     }
 
     // Remove an item from the player's inventory
-    public void removeItemFromInventory(String item) {
-        List<String> inventory = player.getInventory();
+    public void removeItemFromInventory(Item item) {
+        List<Item> inventory = player.getInventory();
         if (inventory.contains(item)) {
             inventory.remove(item);
         }
+    }
+    
+    // Get list of player quests as quest names 
+    public List<String> getInventoryAsString() {
+    	return GameUtils.convertToNameList(player.getInventory());
     }
 
     // Add an Attack to the player's list of attacks
@@ -50,6 +57,11 @@ public class PlayerManager {
         }
     }
     
+    // Get list of player attacks as attack names 
+    public List<String> getAttacksAsString() {
+    	return GameUtils.convertToNameList(player.getAttacks());
+    }
+    
     // Add a quest to the player's active quests
     public void addQuest(Quest quest) {
         player.addQuest(quest);
@@ -60,6 +72,11 @@ public class PlayerManager {
         if (player.getActiveQuests().contains(quest)) {
             quest.completeQuest();
         }
+    }
+    
+    // Get list of player quests as quest names 
+    public List<String> getActiveQuestsAsString() {
+    	return GameUtils.convertToNameList(player.getActiveQuests());
     }
     
     // Check if the player is alive

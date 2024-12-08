@@ -9,16 +9,14 @@ public class EnvironmentManager {
 
     private Player player;
     private WorldManager worldManager;
-    private GUIManager guiManager;
 
     // The name or identifier of the current environment
     private String currentEnvironment;
 
     // Constructor
-    public EnvironmentManager(Player player, WorldManager worldManager, GUIManager guiManager) {
+    public EnvironmentManager(Player player, WorldManager worldManager) {
     	this.player = player;
         this.worldManager = worldManager;
-        this.guiManager = guiManager;
     }
 
     // Initialize the environment manager
@@ -33,7 +31,7 @@ public class EnvironmentManager {
     }
     
     // Display information about the current environment
-    public void displayCurrentEnvironment() {
+    public String displayCurrentEnvironment() {
         // Get the player's current tile
         Tile currentTile = getPlayerTile();
 
@@ -47,9 +45,9 @@ public class EnvironmentManager {
             environmentInfo.append("NPCs Present: ").append(currentTile.hasNPC() ? "Yes" : "No").append("\n");
 
             // Update the GUI with the environment information
-            guiManager.updateMainMenuText(environmentInfo.toString());
+            return environmentInfo.toString();
         } else {
-            guiManager.updateMainMenuText("You are not currently on a valid tile. You should NEVER see this Message.");
+            return "You are not currently on a valid tile. You should NEVER see this Message.";
         }
     }
 

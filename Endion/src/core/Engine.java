@@ -7,6 +7,8 @@ import java.util.Map;
 import org.json.JSONObject;
 
 import entities.*;
+import gui.ActionController;
+import gui.GUIHelper;
 import gui.GameGUI;
 import utilities.*;
 
@@ -20,56 +22,37 @@ public class Engine {
 	private CombatManager combatManager;
 	private EnemyManager enemyManager;
 	private EnvironmentManager environmentManager;
-	private GUIManager guiManager;
+	private GUIHelper guiHelper;
 	private InventoryManager inventoryManager;
 	private NPCManager npcManager;
 	private PlayerManager playerManager;
 	private QuestManager questManager;
     private WorldManager worldManager;
-    
-    
+   
     // GUI
     private GameGUI gameGUI;
-    
-    // Assigning Coordinates to Spawn Locations
- 	private final int[] citySpawn = new int[]{3, 1};
- 	private final int[] mountainSpawn = new int[]{2, 4};
- 	private final int[] forestSpawn = new int[]{1, 7};
+    private ActionController actionController;
  	
  	// Assigning Data Types To Variables
  	private Map<String, Attack> Attacks;
-	private Map<String, Enemy> Enemies;
-	private Map<String, Tile> Tiles;
-	
-	private Config config;
-	
- 	// Constructor
-    public Engine(String playerName, String worldDataPath, String difficulty) {
-    	
-    	//Initialize World (By loading Data from the json File)
-    	initializeWorld(worldDataPath, difficulty);
-    	
-        // Initialize the player
-        this.player = new Player(playerName, config.getPlayerStartingHealth());
-        
-        // Fill the player's attacks list with attack objects
-        AttackManager.addBasicAttacksToPlayer(player, Attacks, config.getPlayerStartingAttackSet());
-        
-        // Initialize WorldManager
-        this.worldManager = new WorldManager(player, Tiles);
-        
-        // Initialize GUIManager
-        this.guiManager = new GUIManager();
-        
+	p);
+   
         // Initialize other Managers
         this.attackManager = new AttackManager(Attacks);
         this.playerManager = new PlayerManager(player);
-        this.environmentManager = new EnvironmentManager(player, worldManager, guiManager);
+        this.environmentManager = new EnvironmentManager(player, worldManager);
         this.enemyManager = new EnemyManager(worldManager , Enemies);
-        this.combatManager = new CombatManager(player, attackManager, enemyManager, guiManager);
+        this.combatManager = new CombatManager(player, attackManager, enemyManager, guiHelper);
+        
+        // Initialize ActionController, Passing in everything so it can properly execute all game actions. 
+        this.actionController = new ActionController(	attackManager, combatManager, enemyManager,
+        												environmentManager, guiHelper, inventoryManager,
+        												npcManager, playerManager, questManager, worldManager);
         
         // Initialize GameGUI
-        this.gameGUI = new GameGUI(player, worldManager, guiManager);
+        this.gameGUI = new GameGUI(actionController);
+        
+        
     }
     
     // Initialize the world (Load world data from the DataLoader)
@@ -100,31 +83,22 @@ public class Engine {
         }
     }
     
-    // Set the player's starting position based on the selected spawn location
- 	public void spawnPlayer(String spawnLocation) {
- 	    switch (spawnLocation.toLowerCase()) {
- 	        case "city":
- 	        	worldManager.setPlayerLocation(citySpawn);
- 	            break;
- 	        case "mountain":
- 	        	worldManager.setPlayerLocation(mountainSpawn);
- 	            break;
- 	        case "forest":
- 	        	worldManager.setPlayerLocation(forestSpawn);
- 	            break;
- 	    }
- 	}
+    
+ 	
+ 	
+ 	
+ 	
     
  	
  	
     // Getters and Setters
     
-    public GUIManager getGUIManager() {
-    	return guiManager;
+    public GUIHelper getGUIManager() {
+    	return guiHelper;
     }
     
-    public void setGUIManager(GUIManager guiManager) {
-    	this.guiManager = guiManager;
+    public void setGUIManager(GUIHelper guiHelper) {
+    	this.guiHelper = guiHelper;
     }
     
     public EnvironmentManager getEnvironmentManager() {
@@ -213,5 +187,13 @@ public class Engine {
 
 	public void setGameGUI(GameGUI gameGUI) {
 		this.gameGUI = gameGUI;
+	}
+
+	public ActionController getActionController() {
+		return actionController;
+	}
+
+	public void setActionController(ActionController actionController) {
+		this.actionController = actionController;
 	}
 }

@@ -1,6 +1,6 @@
 package entities;
 
-public class Quest {
+public class Quest implements Nameable {
     private final String name;
     private final String description;
     private final String objective;

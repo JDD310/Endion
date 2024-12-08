@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import core.Config;
 import entities.Attack;
 import entities.Enemy;
 import entities.Player;
@@ -19,6 +20,7 @@ public class WorldManager {
     private final int worldWidth = 9;  
     private final int worldHeight = 5;
     private Map<String, Tile> tilesMap;
+    
 
     // Constructor
     public WorldManager(Player player, Map<String, Tile> tiles) {
@@ -148,4 +150,9 @@ public class WorldManager {
             System.out.println();
         }
     }
+    
+    // Set the player's starting position based on the selected spawn location
+  	public void spawnPlayer(String spawn) {
+  	    setPlayerLocation(Config.getSpawn(spawn));
+  	}
 }
