@@ -4,10 +4,10 @@ package entities;
 
 public class Armor extends Entity{
 	
-	private final String description;
+
 	
-    public Armor(String name, String description) {
+    public Armor(String name) {
         super(name);
-        this.description = description;
+
     }
 }

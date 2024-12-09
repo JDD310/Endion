@@ -1,6 +1,7 @@
 package utilities;
 
 import org.json.JSONArray;
+
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -14,9 +15,21 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+* The {@code DataLoader} class is responsible for loading and parsing data from 
+* external JSON files. This data is used to configure the game and create entities 
+* such as enemies, NPCs, tiles, and attacks.
+* 
+* @author JD Dennis
+*/
 public class DataLoader {
 
-	// Load data from a JSON file
+	/**
+    * Loads a JSON file from the given file path and returns its contents as a {@link JSONObject}.
+    *
+    * @param filepath The path of the file to be loaded.
+    * @return The loaded {@link JSONObject}, or {@code null} if an error occurs.
+    */
     public static JSONObject loadData(String filepath) {
         try (InputStream inputStream = DataLoader.class.getClassLoader().getResourceAsStream(filepath);
              InputStreamReader reader = new InputStreamReader(inputStream)) {
@@ -29,6 +42,13 @@ public class DataLoader {
         return null;
     }
     
+    /**
+    * Loads configuration data from a {@link JSONObject} based on the specified difficulty.
+    *
+    * @param data The complete JSON data containing the configuration.
+    * @param difficulty The selected difficulty level to load.
+    * @return A {@link Config} object containing player and enemy settings.
+    */
     public static Config loadConfig(JSONObject data, String difficulty) {
     	
         // Access the "config" section
@@ -61,7 +81,14 @@ public class DataLoader {
     }
 
     
-    // Parse enemy data from the JSON
+    /**
+    * Parses and creates enemy objects from JSON data.
+    *
+    * @param data The JSON data containing the enemy details.
+    * @param attackData A map of attacks used to assign attacks to enemies.
+    * @param healthMod A modifier to adjust the enemy's health.
+    * @return A map of enemy names to their corresponding {@link Enemy} objects.
+    */
     public static Map<String, Enemy> parseEnemyData(JSONObject data, Map<String, Attack> attackData, float healthMod) {
         Map<String, Enemy> enemies = new HashMap<>();
 
@@ -98,7 +125,13 @@ public class DataLoader {
         return enemies;
     }
 
-    // Parse tile data from the JSON
+    /**
+    * Parses and creates tile objects from JSON data.
+    *
+    * @param data The JSON data containing the tile details.
+    * @param enemyData A map of enemy data used to assign enemies to tiles.
+    * @return A map of tile names to their corresponding {@link Tile} objects.
+    */
     public static Map<String, Tile> parseTileData(JSONObject data, Map<String, Enemy> enemyData) {
         Map<String, Tile> tiles = new HashMap<>();
 
@@ -112,9 +145,39 @@ public class DataLoader {
                 String description = tileInfo.optString("description", "No description available.");
                 String searchableInfo = tileInfo.optString("searchableInfo", "No searchable information.");
                 JSONArray lootPoolArray = tileInfo.optJSONArray("lootPool");
-                List<String> lootPool = lootPoolArray != null ? lootPoolArray.toList().stream()
+                
+                /**
+                * This line is used multiple times, just with changed variables. Here is an explanation on how it works.
+                * 
+                * 1. {lootPoolArray != null} Checks if lootPoolArray is not null.
+				*		1.a If lootPoolArray is not null, the code after the ? is executed.
+				*		1.b If lootPoolArray is null, the code after the : is executed, which returns an empty list:
+				*	
+				* 2. {lootPoolArray.toList()} Converts the lootPoolArray (which is a JSONArray) into a Java List of objects.
+				* 		This is done to allow easier use of Java’s Stream API for transformations.
+				* 
+				* 3. {.stream()} Converts the list of objects into a stream, enabling functional operations like map() and collect().
+				* 
+				* 4. {.map(Object::toString)} Calls the toString() method on each object in the stream.
+				* 		This ensures that all items in the list are converted to Strings.
+				* 		4.a This is a shorthand for {.map(obj -> obj.toString())}
+				* 
+				* 5. {.collect(Collectors.toList())} Collects all the converted string elements back into a new List<String>.
+				* 		The final result is a list of string representations of the items from the original lootPoolArray.
+				* 
+				* 6. {: new ArrayList<>()} If lootPoolArray is null, it returns a new empty list using this code.
+				* 
+				*  This one line of code is the one i am most proud of in the entire project. 
+				*  it took hours of looking at docs and thinking and testing to get right.
+                */
+                List<String> lootPool = 
+                		lootPoolArray != null 
+                		? lootPoolArray.toList()
+                		.stream()
                         .map(Object::toString)
-                        .collect(Collectors.toList()) : new ArrayList<>();
+                        .collect(Collectors.toList())
+                        : new ArrayList<>();
+                
                 boolean hasNPC = tileInfo.optBoolean("has_npc", false);
                 JSONArray gridLocationArray = tileInfo.optJSONArray("gridLocation");
                 List<Integer> gridLocation = gridLocationArray != null ? gridLocationArray.toList().stream()
@@ -136,6 +199,8 @@ public class DataLoader {
                             System.out.println("Warning: Enemy " + enemyName + " not found for tile " + tileName);
                         }
                     }
+                } else {
+                	System.out.println("Warning: Enemies not found for tile" + tileName);
                 }
                 // Create Tile object
                 Tile tile = new Tile(tileName, description, searchableInfo, lootPool, tileEnemies, hasNPC, gridLoc);
@@ -147,11 +212,16 @@ public class DataLoader {
         return tiles;
     }
 
-    // Parse npc data from the JSON
+    /**
+    * Parses and creates NPC objects from JSON data.
+    *
+    * @param data The JSON data containing NPC details.
+    * @return A map of NPC names to their corresponding {@link NPC} objects.
+    */
     public static Map<String, NPC> parseNPCData(JSONObject data) {
         Map<String, NPC> npcs = new HashMap<>();
 
-        if (data.has("enemies")) {
+        if (data.has("npcs")) {
             JSONObject npcsData = data.getJSONObject("npcs");
             for (String npcName : npcsData.keySet()) {
                 JSONObject npcInfo = npcsData.getJSONObject(npcName);
@@ -181,7 +251,12 @@ public class DataLoader {
         return npcs;
     }
     
-    // Parses attack data from the loaded JSON
+    /**
+    * Parses and creates attack objects from JSON data.
+    *
+    * @param data The JSON data containing attack details.
+    * @return A map of attack names to their corresponding {@link Attack} objects.
+    */
     public static Map<String, Attack> parseAttackData(JSONObject data) {
         Map<String, Attack> attacks = new HashMap<>();
 

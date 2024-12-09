@@ -1,17 +1,18 @@
 package gui;
 
-import entities.Player;
 import managers.PlayerManager;
 
 public class GUIHelper {
 	
     private GameGUI gui;
     private PlayerManager playerManager;
+    
 
     public GUIHelper(PlayerManager playerManager, GameGUI gameGUI) {
     	this.playerManager = playerManager;
     	this.gui = gameGUI;
     }
+    
     
     // Method to update the text field in the GUI with a new message
     public void updateMainMenuText(String message) {
@@ -26,6 +27,11 @@ public class GUIHelper {
     public void endGame() {
  		gui.closeMenu();
  	}
+    
+    
+    public void updateHealth() {
+    	gui.updateHealthField(playerManager.getPlayer().getHealth());
+    }
     
     public void updateStatus() {
     	gui.updateStatusMenu(playerManager.getAttacksAsString(),

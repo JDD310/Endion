@@ -8,7 +8,7 @@ public class Config {
 	// Automatically
 	
 	private static Difficulty difficulty;
-	private String playerSpawnLocation = "city"; // Default Spawn is city, this is Changed by SpawnMenu GUI.
+	private String playerSpawnLocation; // Default Spawn is city, this is Changed by SpawnMenu GUI.
 	private final int playerStartingHealth;
     private final List<String> playerStartingAttacks;
     private final float healthMultiplier;

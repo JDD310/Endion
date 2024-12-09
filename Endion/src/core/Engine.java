@@ -35,23 +35,45 @@ public class Engine {
  	
  	// Assigning Data Types To Variables
  	private Map<String, Attack> Attacks;
-	p);
+	private Map<String, Enemy> Enemies;
+	private Map<String, Tile> Tiles;
+	private Map<String, NPC> NPCs;
+	
+	private Config config;
+	
+ 	// Constructor
+    public Engine(String playerName, String worldDataPath, String difficulty) {
+    	
+    	gameGUI = new GameGUI();
+    	
+    	//Initialize World (By loading Data from the json File)
+    	initializeWorld(worldDataPath, difficulty);
+    	
+        // Initialize the player
+        this.player = new Player(playerName, config.getPlayerStartingHealth());
+        
+        // Fill the player's attacks list with attack objects
+        AttackManager.addBasicAttacksToPlayer(player, Attacks, config.getPlayerStartingAttackSet());
+        
+        // Initialize WorldManager
+        this.worldManager = new WorldManager(player, Tiles);
+        
    
         // Initialize other Managers
         this.attackManager = new AttackManager(Attacks);
         this.playerManager = new PlayerManager(player);
-        this.environmentManager = new EnvironmentManager(player, worldManager);
+        this.npcManager = new NPCManager(NPCs, worldManager);
+        this.inventoryManager = new InventoryManager(player);
+        this.guiHelper = new GUIHelper(playerManager, gameGUI);
         this.enemyManager = new EnemyManager(worldManager , Enemies);
-        this.combatManager = new CombatManager(player, attackManager, enemyManager, guiHelper);
+        this.combatManager = new CombatManager(player, enemyManager, guiHelper);
+        this.environmentManager = new EnvironmentManager(worldManager, inventoryManager, combatManager, npcManager);
         
         // Initialize ActionController, Passing in everything so it can properly execute all game actions. 
-        this.actionController = new ActionController(	attackManager, combatManager, enemyManager,
-        												environmentManager, guiHelper, inventoryManager,
-        												npcManager, playerManager, questManager, worldManager);
+        this.actionController = new ActionController(environmentManager, guiHelper, npcManager, worldManager);
         
-        // Initialize GameGUI
-        this.gameGUI = new GameGUI(actionController);
-        
+        this.gameGUI.setActionController(actionController);
+        gameGUI.initialize();
         
     }
     
@@ -77,19 +99,14 @@ public class Engine {
             Map<String, Tile> tiles = DataLoader.parseTileData(gameData, enemies);
             this.Tiles = tiles;
             
+            // Parse npc data
+            Map<String, NPC> npcs = DataLoader.parseNPCData(gameData);
+            this.NPCs = npcs;
         // Just in Case
         } else {
             System.out.println("Failed to load game data.");
         }
     }
-    
-    
- 	
- 	
- 	
- 	
-    
- 	
  	
     // Getters and Setters
     

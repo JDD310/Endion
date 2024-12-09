@@ -1,6 +1,6 @@
 package entities;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +15,7 @@ public class Enemy extends Entity {
     	super(name);
     	this.description = description;
         this.health = health;
-        this.attacks = new ArrayList<>();
+        this.attacks = attacks;
     }
 
     // Getters

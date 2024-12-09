@@ -35,7 +35,6 @@ public final class GameUtils {
         list.setModel(model);
      }
     
-    
     /**
     * Capitalize the first letter of a string
     * 

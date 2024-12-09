@@ -1,6 +1,6 @@
 package entities;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class Tile extends Entity {
@@ -18,7 +18,7 @@ public class Tile extends Entity {
         this.description = description;
         this.searchableInfo = searchableInfo;
         this.lootPool = lootPool;
-        this.enemies = new ArrayList<>(); // Initialize empty enemy list
+        this.enemies = enemies; // Initialize empty enemy list
         this.hasNPC = hasNPC;
         this.gridLocation = gridLocation;
     }
@@ -51,7 +51,15 @@ public class Tile extends Entity {
     public void removeEnemy(Enemy enemy) {
         enemies.remove(enemy);
     }
+    
+    public void addItem(String item) {
+        lootPool.add(item);
+    }
 
+    public void removeItem(String item) {
+        lootPool.remove(item);
+    }
+    
     public void clearEnemies() {
         enemies.clear();
     }
@@ -62,9 +70,5 @@ public class Tile extends Entity {
 
     public int[] getGridLocation() {
         return gridLocation;
-    }
-    
-    public void removeLoot() {
-    	//TODO
     }
 }

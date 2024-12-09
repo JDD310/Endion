@@ -3,12 +3,12 @@ package gui;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,36 +16,39 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-import core.Engine;
-import entities.Player;
-import managers.WorldManager;
+
 import utilities.GameUtils;
 
 public class GameGUI {
 	
+	private ActionController controller;
+	
 	private JFrame frame;
-//    private JPanel gridPanel;
     private JTextArea mainGameTextArea;
-    
+//  private JPanel gridPanel;
     private JList<String> questList;
     private JList<String> attackList;
     private JList<String> itemList;
+    private JTextField healthField;
     
     
-    
-    private ActionController controller;
-
-    public GameGUI(ActionController actionController) {
-    	this.controller = actionController;
-        initialize();
+    public GameGUI() {
+    }
+    /**
+    * Set the ActionController after the GameGUI has been created.
+    * @param actionController The ActionController to associate with this GameGUI.
+    */
+    public void setActionController(ActionController actionController) {
+        this.controller = actionController;
     }
     
     
-    // Helper Methods
+    // Helper Methods    
     
     // Getter for the Main Game Text Area
     public JTextArea getGameOutputTextArea() {
@@ -85,6 +88,10 @@ public class GameGUI {
         timer.setRepeats(false); // Ensures the Timer runs only once
         timer.start();
     }
+    
+    public void updateHealthField(float health) {
+    	healthField.setText("" + health);
+    }
 	
 	// Method to clear the Main Game Text Area
     public void clearTextArea() {
@@ -122,21 +129,19 @@ public class GameGUI {
 	}
 	
 	
-    // Initialize GUI components
-    private void initialize() {
+    // Initialize GUI for First time
+    public void initialize() {
         frame = new JFrame("Endion RPG");
         frame.setBounds(100, 100, 960, 540);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new CardLayout());
-
+        
         addSpawnMenu();
         addGameMenu();
-        addMoveMenu();
         addStatusMenu();
-
+        
         frame.setVisible(true);
     }
-
     
     // Add Spawn Menu
     private void addSpawnMenu() {
@@ -176,36 +181,72 @@ public class GameGUI {
         JPanel gameMenu = new JPanel(null);
         gameMenu.setBackground(Color.LIGHT_GRAY);
         
-        // Creating All Five Main Buttons Using the Factory
-        JButton moveButton = createMenuButton("Move", 22, 147, "moveMenu", "updateMoveMenu");
-        JButton examineButton = createMenuButton("Examine Area", 191, 176, null, "examine");
-        JButton searchButton = createMenuButton("Search Area", 389, 147, null, "search");
-        JButton statusButton = createMenuButton("View Status", 558, 155, "statusMenu", "updateStatusMenu");
-        JButton endButton = createMenuButton("End Adventure", 735, 186, null, "endGame");
-        
-        // Adding the buttons to the menu
-        gameMenu.add(moveButton);
-        gameMenu.add(endButton);
-        gameMenu.add(statusButton);
-        gameMenu.add(searchButton);
-        gameMenu.add(examineButton);
-
-        // Creating the main output area for the game.
+     // Creating the main output area for the game.
         mainGameTextArea = new JTextArea();
         mainGameTextArea.setWrapStyleWord(true);
 		mainGameTextArea.setLineWrap(true);
 		mainGameTextArea.setEditable(false);
 		mainGameTextArea.setFont(new Font("Monospaced", Font.PLAIN, 17));
+        
+        // Creating All Five Main Buttons Using the Factory
+		JButton speakButton = createMenuButton("Speak", 22, 147, null, "speak");
+        JButton examineButton = createMenuButton("Examine Area", 191, 176, "gameMenu", "examine");
+        JButton searchButton = createMenuButton("Search Area", 389, 147, "gameMenu", "search");
+        JButton statusButton = createMenuButton("View Status", 558, 155, "statusMenu", "updateStatusMenu");
+        JButton endButton = createMenuButton("End Adventure", 735, 186, null, "endGame");
+        
+        
+
+        
+        // Directional Move buttons created with the Factory
+        JButton moveNorth = createMoveButton("Move North", "NORTH", 134, 45, "moveNorth");
+        JButton moveSouth = createMoveButton("Move South", "SOUTH", 134, 137, "moveSouth");
+        JButton moveEast = createMoveButton("Move East", "EAST", 244, 86, "moveEast");
+        JButton moveWest = createMoveButton("Move West", "WEST", 24, 86, "moveWest");
+        
+        // Adding the buttons to the menu
+        gameMenu.add(endButton);
+        gameMenu.add(statusButton);
+        gameMenu.add(searchButton);
+        gameMenu.add(examineButton);
+        gameMenu.add(speakButton);
+        gameMenu.add(moveNorth);
+        gameMenu.add(moveSouth);
+        gameMenu.add(moveEast);
+        gameMenu.add(moveWest);
 		
+        
+        
 		// Creating the Scroll pane the main output area sits inside 
         JScrollPane scrollPane = new JScrollPane(mainGameTextArea);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(77, 58, 792, 316);
+        scrollPane.setBounds(367, 58, 502, 316);
         
         // Adding the Output area to the gameMenu
         gameMenu.add(scrollPane);
 
+//		// Creating the Grid Panel that Displays the Player's current location on map.
+//      gridPanel = new JPanel(new GridLayout(9, 5));
+//      gridPanel.setBounds(441, 155, 439, 310);
+//      guiManager.populateGridPanel(player, worldManager);
+//      moveMenu.add(gridPanel);
+        
+        // Health Label
+        JLabel healthLabel = new JLabel("Health:");
+        healthLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        healthLabel.setBounds(101, 13, 61, 23);
+        gameMenu.add(healthLabel);
+        
+        healthField = new JTextField();
+        healthField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        healthField.setBackground(Color.LIGHT_GRAY);
+        healthField.setEditable(false);
+        healthField.setBounds(149, 14, 75, 20);
+        gameMenu.add(healthField);
+        
+        
+        
         frame.getContentPane().add(gameMenu, "gameMenu");
     }
     
@@ -221,40 +262,6 @@ public class GameGUI {
         }
         return button;
     }
-
-    // Add Move Menu
-    private void addMoveMenu() {
-        JPanel moveMenu = new JPanel(null);
-        moveMenu.setBackground(Color.LIGHT_GRAY);
-        
-        
-        // Directional Move buttons created with the Factory
-        JButton moveNorth = createMoveButton("Move North", "NORTH", 134, 45, "moveNorth");
-        JButton moveSouth = createMoveButton("Move South", "SOUTH", 134, 137, "moveSouth");
-        JButton moveEast = createMoveButton("Move East", "EAST", 244, 86, "moveEast");
-        JButton moveWest = createMoveButton("Move West", "WEST", 24, 86, "moveWest");
-        
-        // Button to Return to Menu
-        JButton exitMoveMenu = new JButton("Back to Menu");
-        exitMoveMenu.setFont(new Font("Lucida Sans Unicode", Font.PLAIN, 12));
-		exitMoveMenu.setBounds(10, 399, 174, 93);
-		switchMenuButton(exitMoveMenu, "gameMenu");
-		
-//		// Creating the Grid Panel that Displays the Player's current location on map.
-//        gridPanel = new JPanel(new GridLayout(9, 5));
-//        gridPanel.setBounds(441, 155, 439, 310);
-//        guiManager.populateGridPanel(player, worldManager);
-//        
-        // Adding all elements to the menu
-        moveMenu.add(moveNorth);
-        moveMenu.add(moveSouth);
-        moveMenu.add(moveEast);
-        moveMenu.add(moveWest);
-        moveMenu.add(exitMoveMenu);
-//        moveMenu.add(gridPanel);
-
-        frame.getContentPane().add(moveMenu, "moveMenu");
-    }
     
     // Factory to Create the MoveMenu Buttons
     private JButton createMoveButton(String text, String direction, int x, int y, String action) {
@@ -268,6 +275,12 @@ public class GameGUI {
 		});
         return button;
     }
+   
+		
+
+
+    
+   
     
     private void addStatusMenu() {
         // Create the Status Menu panel
